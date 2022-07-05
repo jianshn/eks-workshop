@@ -2,9 +2,9 @@
 
 
 # Install Kubectl
-# sudo curl --location -o /usr/local/bin/kubectl "https://amazon-eks.s3.us-west-2.amazonaws.com/$KUBECTL_VERSION/2021-07-05/bin/linux/amd64/kubectl"
-# sudo chmod +x /usr/local/bin/kubectl
-# kubectl version --client
+sudo curl --location -o /usr/local/bin/kubectl "https://amazon-eks.s3.us-west-2.amazonaws.com/$KUBECTL_VERSION/2021-07-05/bin/linux/amd64/kubectl"
+sudo chmod +x /usr/local/bin/kubectl
+kubectl version --client
 
 # Install Helm
 curl -sSL https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
