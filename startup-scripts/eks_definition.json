@@ -1,0 +1,69 @@
+{
+  "Comment": "An example of the Amazon States Language for managing an Amazon EKS Cluster",
+  "StartAt": "Create an EKS cluster",
+  "States": {
+    "Create an EKS cluster": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::eks:createCluster.sync",
+      "Parameters": {
+        "Name": "eks-startup",
+        "ResourcesVpcConfig": {
+          "SubnetIds": [
+            "<subnetIDs>"
+            ],
+          "EndpointPublicAccess": true,
+          "SecurityGroupIds": [
+            "<sg_id>"
+          ]
+        },
+        "RoleArn": "<cluster_arn>",
+        "EncryptionConfig": [ 
+          { 
+            "Provider": { 
+                "KeyArn": "<Key_arn>"
+            },
+            "Resources": [
+			"secrets"
+			]
+          }
+      ]
+      },
+      "Retry": [{
+        "ErrorEquals": [ "States.ALL" ],
+        "IntervalSeconds": 30,
+        "MaxAttempts": 2,
+        "BackoffRate": 2
+      }],
+      "ResultPath": "$.eks",
+      "Next": "Create a node group"
+    },
+    "Create a node group": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::eks:createNodegroup.sync",
+      "Parameters": {
+        "ClusterName": "eks-startup",
+        "NodegroupName": "eks-startup-nodegroup",
+        "NodeRole": "<node_arn>",
+        "Subnets": [
+          "subnetIDs"
+          ],
+        "DiskSize": 30,
+        "AmiType": "AL2_x86_64",
+        "InstanceTypes": ["m5.large"],
+		"ScalingConfig": {
+			"DesiredSize": 3,
+			"MaxSize": 5,
+			"MinSize": 3
+		}
+      },
+      "Retry": [{
+        "ErrorEquals": [ "States.ALL" ],
+        "IntervalSeconds": 30,
+        "MaxAttempts": 2,
+        "BackoffRate": 2
+      }],
+      "ResultPath": "$.nodegroup",
+      "End": true
+    }
+  }
+}
