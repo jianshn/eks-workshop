@@ -58,7 +58,7 @@ class WebhostingappStack(Stack):
         super().__init__(scope, construct_id, **kwargs)
 
         #Create the VPC
-        vpc = ec2.Vpc(self, "Webhosting-VPC", cidr='10.0.0.0/16')
+        vpc = ec2.Vpc(self, "Webhosting-VPC",ip_addresses=ec2.IpAddresses.cidr("10.0.0.0/16"))
 
         # Create IAM role
         assumeRoleTrustPolicy = {
@@ -265,8 +265,8 @@ class WebhostingappStack(Stack):
 
 
         # Depends on
-        web_asg.add_depends_on(WebserverLaunchTemplate)
-        asg_scaling_policy.add_depends_on(web_asg)
-        webserver_instance_profile.add_depends_on(webserver_role)
-        dBInstance.add_depends_on(dBSubnet_group)
-        db_secret.add_depends_on(dBInstance)
+        web_asg.add_dependency(WebserverLaunchTemplate)
+        asg_scaling_policy.add_dependency(web_asg)
+        webserver_instance_profile.add_dependency(webserver_role)
+        dBInstance.add_dependency(dBSubnet_group)
+        db_secret.add_dependency(dBInstance)
