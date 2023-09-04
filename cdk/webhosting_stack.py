@@ -62,7 +62,7 @@ class WebhostingStack(Stack):
         print(self.region)
         
         #Create the VPC
-        vpc = ec2.Vpc(self, "Webhosting-VPC", cidr='10.0.0.0/16')
+        vpc = ec2.Vpc(self, "Webhosting-VPC", ip_addresses=ec2.IpAddresses.cidr('10.0.0.0/16'))
 
         # Create IAM role
         assumeRoleTrustPolicy = {
@@ -107,7 +107,7 @@ class WebhostingStack(Stack):
 
         # Create Launch template
         ## Get latest amazon linux ami
-        ssm = boto3.client('ssm', region_name=self.region)
+        ssm = boto3.client('ssm')
         imageId = ssm.get_parameters(
             Names=[
                 '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2',
@@ -275,8 +275,8 @@ class WebhostingStack(Stack):
 
 
         # Depends on
-        web_asg.add_depends_on(WebserverLaunchTemplate)
-        asg_scaling_policy.add_depends_on(web_asg)
-        webserver_instance_profile.add_depends_on(webserver_role)
-        dBInstance.add_depends_on(dBSubnet_group)
-        db_secret.add_depends_on(dBInstance)
+        web_asg.add_dependency(WebserverLaunchTemplate)
+        asg_scaling_policy.add_dependency(web_asg)
+        webserver_instance_profile.add_dependency(webserver_role)
+        dBInstance.add_dependency(dBSubnet_group)
+        db_secret.add_dependency(dBInstance)
